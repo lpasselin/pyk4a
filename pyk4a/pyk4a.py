@@ -94,6 +94,7 @@ class PyK4A:
         res = k4a_module.device_get_capture(self._device_id, timeout)
         self._verify_error(res)
 
+
         color = self._get_capture_color()
         if color_only:
             return color
@@ -246,3 +247,12 @@ class PyK4A:
             raise K4AException()
         elif res == Result.Timeout:
             raise K4ATimeoutException()
+
+
+class PyK4ACapture(object):
+    def __init__(self, device: PyK4A, capture_ptr=0):
+        self.device = device
+        self.capture_ptr = capture_ptr
+
+    def __del__(self):
+        k4a_module.capture_release()

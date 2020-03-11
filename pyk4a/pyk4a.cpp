@@ -433,6 +433,22 @@ extern "C" {
         return Py_BuildValue("IIfff", res, valid, target_point3d_mm.xyz.x, target_point3d_mm.xyz.y, target_point3d_mm.xyz.z);
     }
 
+    static k4a_capture_t* get_k4a_capture_from_pyk4acapture(PyObject* self){
+        PyObject* pyobj = PyObject_GetAttrString(self, "capture_ptr");
+        Py_DECREF(capture_ptr);
+        k4a_capture_t* capture_ptr = (k4a_capture_t*) PyLong_AsVoidPtr(pyobj);
+        return capture_ptr
+    }
+
+    static PyObject* capture_release(PyObject* self, PyObject *args){
+        k4a_capture_t* capture = get_k4a_capture_from_pyk4acapture(self);
+        if (capture) {
+            k4a_capture_release(capture);
+        }
+        return Py_BuildValue("");
+    }
+
+
     // Source : https://github.com/MathGaron/pyvicon/blob/master/pyvicon/pyvicon.cpp
     //###################
     //Module initialisation
@@ -467,6 +483,7 @@ extern "C" {
         {"transformation_depth_image_to_color_camera", transformation_depth_image_to_color_camera, METH_VARARGS, "Transforms the depth map into the geometry of the color camera."},
         {"calibration_3d_to_3d", calibration_3d_to_3d, METH_VARARGS, "Transforms the coordinates between 2 3D systems"},
         {"calibration_2d_to_3d", calibration_2d_to_3d, METH_VARARGS, "Transforms the coordinates between a pixel and a 3D system"},
+        {"capture_release", capture_release, METH_VARARGS, "Release a capture. Call from PyK4ACapture"},
         {NULL, NULL, 0, NULL}
     };
 
